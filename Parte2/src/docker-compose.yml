@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  mysql:
+    container_name: digimon-mysql
+    image: digimon-mysql
+    build:
+      context: .
+      dockerfile: ./dockerfile.mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+     
+    networks:
+      - digimon-network
+    ports:
+      - 3306:3306
+    volumes:
+      - digimon-mysql-data:/var/lib/mysql
+  app:
+    depends_on:
+      - mysql
+    container_name: digimon-app
+    image: digimon-app
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8080:8080
+    networks:
+      - digimon-network
+
+networks:
+  digimon-network:
+
+volumes:
+  digimon-mysql-data:
